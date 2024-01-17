@@ -13,10 +13,8 @@ public class FullScreenSlideshowViewController: UIViewController {
     public var slideshow: MediaSlideshow = {
         let slideshow = MediaSlideshow()
         slideshow.zoomEnabled = true
-        slideshow.pageIndicatorPosition = PageIndicatorPosition(horizontal: .center, vertical: .bottom)
-        // turns off the timer
-        slideshow.autoresizingMask = [UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
-
+        slideshow.contentMode = .scaleAspectFit
+        slideshow.autoresizingMask = [UIView.AutoresizingMask.flexibleWidth, UIView.AutoresizingMask.flexibleHeight]
         return slideshow
     }()
 
@@ -53,23 +51,15 @@ public class FullScreenSlideshowViewController: UIViewController {
         self.init(nibName: nil, bundle: nil)
         slideshow.delegate = self
         self.modalPresentationStyle = .custom
-        if #available(iOS 13.0, *) {
-            // Use KVC to set the value to preserve backwards compatiblity with Xcode < 11
-            self.setValue(true, forKey: "modalInPresentation")
-        }
     }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = backgroundColor
         slideshow.backgroundColor = backgroundColor
-
         view.addSubview(slideshow)
-
-        // close button configuration
-        closeButton.setImage(UIImage(named: "ic_cross_white", in: .module, compatibleWith: nil), for: UIControlState())
-        closeButton.addTarget(self, action: #selector(FullScreenSlideshowViewController.close), for: UIControlEvents.touchUpInside)
+        closeButton.setImage(UIImage(named: "ic_cross_white", in: .module, compatibleWith: nil), for: .normal)
+        closeButton.addTarget(self, action: #selector(FullScreenSlideshowViewController.close), for: .touchUpInside)
         view.addSubview(closeButton)
     }
 
@@ -79,7 +69,6 @@ public class FullScreenSlideshowViewController: UIViewController {
 
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         if isInit {
             isInit = false
             slideshow.setCurrentPage(initialPage, animated: false)
@@ -90,8 +79,6 @@ public class FullScreenSlideshowViewController: UIViewController {
         super.viewWillDisappear(animated)
 
         slideshow.slides.forEach { $0.willBeRemoved() }
-
-        // Prevents broken dismiss transition when image is zoomed in
         if let zoomable = slideshow.currentSlide as? ZoomableMediaSlideshowSlide {
             zoomable.zoomOut()
         }
@@ -100,15 +87,10 @@ public class FullScreenSlideshowViewController: UIViewController {
     public override func viewDidLayoutSubviews() {
         if !isBeingDismissed {
             let safeAreaInsets: UIEdgeInsets
-            if #available(iOS 11.0, *) {
-                safeAreaInsets = view.safeAreaInsets
-            } else {
-                safeAreaInsets = UIEdgeInsets.zero
-            }
-
+            safeAreaInsets = view.safeAreaInsets
+            
             closeButton.frame = closeButtonFrame ?? CGRect(x: max(10, safeAreaInsets.left), y: max(10, safeAreaInsets.top), width: 40, height: 40)
         }
-
         slideshow.frame = view.frame
     }
 

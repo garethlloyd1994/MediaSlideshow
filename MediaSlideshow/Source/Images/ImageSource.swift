@@ -27,12 +27,11 @@ public protocol ImageSource: MediaSource {
 
 extension ImageSource {
     public func slide(in slideshow: MediaSlideshow) -> MediaSlideshowSlide {
-        let slide = ImageSlide(
-            image: self,
-            zoomEnabled: slideshow.zoomEnabled,
-            activityIndicator: slideshow.activityIndicator?.create(),
-            maximumScale: slideshow.maximumScale)
-        slide.imageView.contentMode = .scaleAspectFill
+        let slide = ImageSlide( image: self,
+                                zoomEnabled: slideshow.zoomEnabled,
+                                activityIndicator: slideshow.activityIndicator?.create(),
+                                maximumScale: slideshow.maximumScale)
+        slide.imageView.contentMode = slideshow.contentScaleMode
         return slide
     }
 }

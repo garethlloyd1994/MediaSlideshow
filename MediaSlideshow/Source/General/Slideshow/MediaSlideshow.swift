@@ -57,16 +57,7 @@ public class MediaSlideshow: UIView {
 
     /// Scroll View to wrap the slideshow
     public let scrollView = UIScrollView()
-
-    /// Page Control shown in the slideshow
-    @available(*, deprecated, message: "Use pageIndicator.view instead")
-    public var pageControl: UIPageControl {
-        if let pageIndicator = pageIndicator as? UIPageControl {
-            return pageIndicator
-        }
-        fatalError("pageIndicator is not an instance of UIPageControl")
-    }
-
+   
     /// Activity indicator shown when loading image
     public var activityIndicator: ActivityIndicatorFactory? {
         didSet {
@@ -87,31 +78,8 @@ public class MediaSlideshow: UIView {
         }
     }
 
-    public var pageIndicatorPosition: PageIndicatorPosition = PageIndicatorPosition() {
-        didSet {
-            setNeedsLayout()
-        }
-    }
-
     // MARK: - State properties
 
-    /// Page control position
-    @available(*, deprecated, message: "Use pageIndicatorPosition instead")
-    public var pageControlPosition = PageControlPosition.insideScrollView {
-        didSet {
-            pageIndicator = UIPageControl()
-            switch pageControlPosition {
-            case .hidden:
-                pageIndicator = nil
-            case .insideScrollView:
-                pageIndicatorPosition = PageIndicatorPosition(vertical: .bottom)
-            case .underScrollView:
-                pageIndicatorPosition = PageIndicatorPosition(vertical: .under)
-            case .custom(let padding):
-                pageIndicatorPosition = PageIndicatorPosition(vertical: .customUnder(padding: padding-30))
-            }
-        }
-    }
 
     /// Current page
     public fileprivate(set) var currentPage: Int = 0 {
@@ -180,6 +148,15 @@ public class MediaSlideshow: UIView {
     /// Image preload configuration, can be sed to .fixed to enable lazy load or .all
     public var preload = ImagePreload.all
 
+    /// Content mode of each image in the slideshow
+    open var contentScaleMode: UIView.ContentMode = .scaleAspectFit {
+        didSet {
+            for view in slides {
+                view.mediaContentMode = contentScaleMode
+            }
+        }
+    }
+    
     fileprivate var isAnimating: Bool = false
 
     /// Transitioning delegate to manage the transition to full screen controller
@@ -208,11 +185,7 @@ public class MediaSlideshow: UIView {
     fileprivate func initialize() {
         autoresizesSubviews = true
         clipsToBounds = true
-        if #available(iOS 13.0, *) {
-            backgroundColor = .systemBackground
-        }
-
-        // scroll view configuration
+        backgroundColor = .systemBackground
         scrollView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height - 50.0)
         scrollView.delegate = self
         scrollView.isPagingEnabled = true
@@ -220,61 +193,30 @@ public class MediaSlideshow: UIView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.autoresizingMask = autoresizingMask
-        if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft {
-            scrollView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-        }
-
-        if #available(iOS 11.0, *) {
-            scrollView.contentInsetAdjustmentBehavior = .never
-        }
+        scrollView.contentInsetAdjustmentBehavior = .never
         addSubview(scrollView)
-
         if pageIndicator == nil {
             pageIndicator = UIPageControl()
         }
-
         layoutScrollView()
     }
 
     public override func layoutSubviews() {
         super.layoutSubviews()
-
-        // fixes the case when automaticallyAdjustsScrollViewInsets on parenting view controller is set to true
         scrollView.contentInset = UIEdgeInsets.zero
-
-        layoutPageControl()
         layoutScrollView()
-    }
-
-    public func layoutPageControl() {
-        if let pageIndicatorView = pageIndicator?.view {
-            pageIndicatorView.isHidden = sources.count < 2
-
-            var edgeInsets: UIEdgeInsets = UIEdgeInsets.zero
-            if #available(iOS 11.0, *) {
-                edgeInsets = safeAreaInsets
-            }
-
-            pageIndicatorView.sizeToFit()
-            pageIndicatorView.frame = pageIndicatorPosition.indicatorFrame(for: frame, indicatorSize: pageIndicatorView.frame.size, edgeInsets: edgeInsets)
-        }
     }
 
     /// updates frame of the scroll view and its inner items
     func layoutScrollView() {
-        let pageIndicatorViewSize = pageIndicator?.view.frame.size
-        let scrollViewBottomPadding = pageIndicatorViewSize.flatMap { pageIndicatorPosition.underPadding(for: $0) } ?? 0
-
-        scrollView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height - scrollViewBottomPadding)
+        scrollView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width * CGFloat(sources.count), height: scrollView.frame.size.height)
-
         for (index, view) in slides.enumerated() {
             if let zoomable = view as? ZoomableMediaSlideshowSlide, !zoomable.zoomInInitially {
                 zoomable.zoomOut()
             }
             view.frame = CGRect(x: scrollView.frame.size.width * CGFloat(index), y: 0, width: scrollView.frame.size.width, height: scrollView.frame.size.height)
         }
-
         setScrollViewPage(scrollViewPage, animated: false)
     }
 
@@ -325,7 +267,6 @@ public class MediaSlideshow: UIView {
         pageIndicator?.numberOfPages = sources.count
         reloadScrollView()
         layoutScrollView()
-        layoutPageControl()
     }
 
     // MARK: paging methods

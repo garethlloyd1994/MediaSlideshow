@@ -20,13 +20,13 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
 
     public let playerController: AVPlayerViewController
     private let transitionView: UIImageView
-
-    public init(playerController: AVPlayerViewController) {
+    
+    public init(playerController: AVPlayerViewController, mediaContentMode: UIView.ContentMode) {
         self.playerController = playerController
         self.transitionView = UIImageView()
+        self.mediaContentMode = mediaContentMode
         super.init(frame: .zero)
-            playerController.videoGravity = .resizeAspectFill
-        // Stays hidden, but needs to be apart of the view heirarchy due to how the zoom animation works.
+        setPlayerViewVideoGravity()
         transitionView.isHidden = true
         embed(transitionView)
         embed(playerController.view)
@@ -39,6 +39,21 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func setPlayerViewVideoGravity() {
+          switch mediaContentMode {
+          case .scaleAspectFill: playerController.videoGravity = .resizeAspectFill
+          case .scaleToFill: playerController.videoGravity = .resize
+          default: playerController.videoGravity = .resizeAspect
+          }
+      }
+
+      // MARK: - MediaSlideshowSlide
+
+      public var mediaContentMode: UIView.ContentMode {
+          didSet {
+              setPlayerViewVideoGravity()
+          }
+      }
 
     public func willBeRemoved() {
         playerController.player?.pause()
