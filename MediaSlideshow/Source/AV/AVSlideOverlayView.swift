@@ -15,7 +15,7 @@ public protocol AVSlideOverlayView: UIView {
     func playerDidUpdateStatus(_ status: AVPlayer.TimeControlStatus)
 }
 
-open class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
+public class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
 
     private let playView: AVSlideOverlayView?
     private let pauseView: AVSlideOverlayView?
@@ -23,13 +23,11 @@ open class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
     private var playerTimeControlStatusObservation: NSKeyValueObservation?
     private var playerTimeObserver: Any?
 
-    public init(
-        item: AVPlayerItem,
-        player: AVPlayer,
-        playView: AVSlideOverlayView? = AVSlidePlayingOverlayView(),
-        pauseView: AVSlideOverlayView? = AVSlidePausedOverlayView(),
-        activityView: ActivityIndicatorView? = nil
-    ) {
+    public init(item: AVPlayerItem,
+                player: AVPlayer,
+                playView: AVSlideOverlayView? = AVSlidePlayingOverlayView(),
+                pauseView: AVSlideOverlayView? = AVSlidePausedOverlayView(),
+                activityView: ActivityIndicatorView? = nil) {
         self.playView = playView
         self.pauseView = pauseView
         self.activityView = activityView
@@ -48,13 +46,13 @@ open class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
         playerTimeObserver = player.addPeriodicTimeObserver(
             forInterval: interval,
             queue: .main) { [weak item, weak self] time in
-            guard let self = self, let item = item else { return }
-            let currentTime = item.currentTime().seconds
-            let duration = item.duration.seconds
-            self.playerDidUpdateToTime(
-                currentTime,
-                duration: (duration.isNaN || duration.isInfinite) ? nil : duration)
-        }
+                guard let self = self, let item = item else { return }
+                let currentTime = item.currentTime().seconds
+                let duration = item.duration.seconds
+                self.playerDidUpdateToTime(
+                    currentTime,
+                    duration: (duration.isNaN || duration.isInfinite) ? nil : duration)
+            }
         playerTimeControlStatusObservation = player.observe(\.timeControlStatus) { [weak self] player, _ in
             self?.playerDidUpdateStatus(player.timeControlStatus)
         }

@@ -8,12 +8,11 @@
 import UIKit
 
 @objcMembers
-open class FullScreenSlideshowViewController: UIViewController {
+public class FullScreenSlideshowViewController: UIViewController {
 
-    open var slideshow: MediaSlideshow = {
+    public var slideshow: MediaSlideshow = {
         let slideshow = MediaSlideshow()
         slideshow.zoomEnabled = true
-        slideshow.contentScaleMode = UIViewContentMode.scaleAspectFit
         slideshow.pageIndicatorPosition = PageIndicatorPosition(horizontal: .center, vertical: .bottom)
         // turns off the timer
         slideshow.autoresizingMask = [UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
@@ -22,27 +21,27 @@ open class FullScreenSlideshowViewController: UIViewController {
     }()
 
     /// Close button 
-    open var closeButton = UIButton()
+    public var closeButton = UIButton()
 
     /// Close button frame
-    open var closeButtonFrame: CGRect?
+    public var closeButtonFrame: CGRect?
 
     /// Closure called on page selection
-    open var pageSelected: ((_ page: Int) -> Void)?
+    public var pageSelected: ((_ page: Int) -> Void)?
 
     /// Index of initial image
-    open var initialPage: Int = 0
+    public var initialPage: Int = 0
 
     /// Datasource
-    open var sources: [MediaSource] {
+    public var sources: [MediaSource] {
         slideshow.sources
     }
 
     /// Background color
-    open var backgroundColor = UIColor.black
+    public var backgroundColor = UIColor.black
 
     /// Enables/disable zoom
-    open var zoomEnabled = true {
+    public var zoomEnabled = true {
         didSet {
             slideshow.zoomEnabled = zoomEnabled
         }
@@ -60,7 +59,7 @@ open class FullScreenSlideshowViewController: UIViewController {
         }
     }
 
-    override open func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = backgroundColor
@@ -74,11 +73,11 @@ open class FullScreenSlideshowViewController: UIViewController {
         view.addSubview(closeButton)
     }
 
-    override open var prefersStatusBarHidden: Bool {
+    override public var prefersStatusBarHidden: Bool {
         return true
     }
 
-    override open func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         if isInit {
@@ -87,7 +86,7 @@ open class FullScreenSlideshowViewController: UIViewController {
         }
     }
 
-    override open func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         slideshow.slides.forEach { $0.willBeRemoved() }
@@ -98,7 +97,7 @@ open class FullScreenSlideshowViewController: UIViewController {
         }
     }
 
-    open override func viewDidLayoutSubviews() {
+    public override func viewDidLayoutSubviews() {
         if !isBeingDismissed {
             let safeAreaInsets: UIEdgeInsets
             if #available(iOS 11.0, *) {

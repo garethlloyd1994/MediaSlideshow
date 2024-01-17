@@ -9,7 +9,7 @@ import AVFoundation
 import AVKit
 import Foundation
 
-open class AVSource: NSObject, MediaSource {
+public class AVSource: NSObject, MediaSource {
     public enum Playback: Equatable {
         case play // will be muted when playback controls are hidden
         case paused
@@ -34,7 +34,7 @@ open class AVSource: NSObject, MediaSource {
         self.init(asset: AVAsset(url: url), onAppear: onAppear)
     }
 
-    open func slide(in slideshow: MediaSlideshow) -> MediaSlideshowSlide {
+    public func slide(in slideshow: MediaSlideshow) -> MediaSlideshowSlide {
         let playerController = AVPlayerViewController()
         playerController.player = player
         playerController.showsPlaybackControls = onAppear == .paused || slideshow.zoomEnabled
@@ -51,15 +51,12 @@ open class AVSource: NSObject, MediaSource {
             pauseView: pauseView,
             activityView: slideshow.activityIndicator?.create())
         playerController.contentOverlayView?.embed(overlay)
-        let slide = AVPlayerSlide(
-            playerController: playerController,
-            mediaContentMode: slideshow.contentScaleMode)
+        let slide = AVPlayerSlide(playerController: playerController)
         slide.delegate = self
         return slide
     }
 
-    @objc
-    open func playerItemDidPlayToEndTime(notification: Notification) {
+    @objc public func playerItemDidPlayToEndTime(notification: Notification) {
         player.seek(to: .zero)
     }
 }

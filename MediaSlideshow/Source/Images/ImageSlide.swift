@@ -9,7 +9,7 @@ import UIKit
 
 /// Used to wrap a single slideshow item and allow zooming on it
 @objcMembers
-open class ImageSlide: UIScrollView, UIScrollViewDelegate, ZoomableMediaSlideshowSlide {
+public class ImageSlide: UIScrollView, UIScrollViewDelegate, ZoomableMediaSlideshowSlide {
 
     /// Image view to hold the image
     public let imageView = UIImageView()
@@ -21,18 +21,18 @@ open class ImageSlide: UIScrollView, UIScrollViewDelegate, ZoomableMediaSlidesho
     public let image: ImageSource
 
     /// Guesture recognizer to detect double tap to zoom
-    open var gestureRecognizer: UITapGestureRecognizer?
+    public var gestureRecognizer: UITapGestureRecognizer?
 
     /// Holds if the zoom feature is enabled
     public let zoomEnabled: Bool
 
     /// If set to true image is initially zoomed in
-    open var zoomInInitially = false
+    public var zoomInInitially = false
 
     /// Maximum zoom scale
-    open var maximumScale: CGFloat = 2.0
+    public var maximumScale: CGFloat = 2.0
 
-    open var mediaContentMode: UIView.ContentMode {
+    public var mediaContentMode: UIView.ContentMode {
         get { imageView.contentMode }
         set { imageView.contentMode = newValue }
     }
@@ -110,7 +110,7 @@ open class ImageSlide: UIScrollView, UIScrollViewDelegate, ZoomableMediaSlidesho
         fatalError("init(coder:) has not been implemented")
     }
 
-    override open func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
 
         if !zoomEnabled {
@@ -242,11 +242,11 @@ open class ImageSlide: UIScrollView, UIScrollViewDelegate, ZoomableMediaSlidesho
 
     // MARK: UIScrollViewDelegate
 
-    open func scrollViewDidZoom(_ scrollView: UIScrollView) {
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         setPictoCenter()
     }
 
-    open func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return zoomEnabled ? imageViewWrapper : nil
     }
 }

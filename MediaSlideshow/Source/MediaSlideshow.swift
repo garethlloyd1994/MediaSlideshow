@@ -53,14 +53,14 @@ public enum ImagePreload {
 
 /// Main view containing the Slideshow
 @objcMembers
-open class MediaSlideshow: UIView {
+public class MediaSlideshow: UIView {
 
     /// Scroll View to wrap the slideshow
     public let scrollView = UIScrollView()
 
     /// Page Control shown in the slideshow
     @available(*, deprecated, message: "Use pageIndicator.view instead")
-    open var pageControl: UIPageControl {
+    public var pageControl: UIPageControl {
         if let pageIndicator = pageIndicator as? UIPageControl {
             return pageIndicator
         }
@@ -68,13 +68,13 @@ open class MediaSlideshow: UIView {
     }
 
     /// Activity indicator shown when loading image
-    open var activityIndicator: ActivityIndicatorFactory? {
+    public var activityIndicator: ActivityIndicatorFactory? {
         didSet {
             reloadScrollView()
         }
     }
 
-    open var pageIndicator: PageIndicatorView? {
+    public var pageIndicator: PageIndicatorView? {
         didSet {
             oldValue?.view.removeFromSuperview()
             if let pageIndicator = pageIndicator {
@@ -87,7 +87,7 @@ open class MediaSlideshow: UIView {
         }
     }
 
-    open var pageIndicatorPosition: PageIndicatorPosition = PageIndicatorPosition() {
+    public var pageIndicatorPosition: PageIndicatorPosition = PageIndicatorPosition() {
         didSet {
             setNeedsLayout()
         }
@@ -97,7 +97,7 @@ open class MediaSlideshow: UIView {
 
     /// Page control position
     @available(*, deprecated, message: "Use pageIndicatorPosition instead")
-    open var pageControlPosition = PageControlPosition.insideScrollView {
+    public var pageControlPosition = PageControlPosition.insideScrollView {
         didSet {
             pageIndicator = UIPageControl()
             switch pageControlPosition {
@@ -114,7 +114,7 @@ open class MediaSlideshow: UIView {
     }
 
     /// Current page
-    open fileprivate(set) var currentPage: Int = 0 {
+    public fileprivate(set) var currentPage: Int = 0 {
         didSet {
             if oldValue != currentPage {
                 pageIndicator?.page = currentPage
@@ -125,19 +125,19 @@ open class MediaSlideshow: UIView {
     }
 
     /// Delegate called on slideshow state change
-    open weak var delegate: MediaSlideshowDelegate?
+    public weak var delegate: MediaSlideshowDelegate?
 
     /// Called on each currentPage change
-    open var currentPageChanged: ((_ page: Int) -> Void)?
+    public var currentPageChanged: ((_ page: Int) -> Void)?
 
     /// Called on scrollViewWillBeginDragging
-    open var willBeginDragging: (() -> Void)?
+    public var willBeginDragging: (() -> Void)?
 
     /// Called on scrollViewDidEndDecelerating
-    open var didEndDecelerating: (() -> Void)?
+    public var didEndDecelerating: (() -> Void)?
 
     /// Currenlty displayed slideshow item
-    open var currentSlide: MediaSlideshowSlide? {
+    public var currentSlide: MediaSlideshowSlide? {
         if slides.count > scrollViewPage {
             return slides[scrollViewPage]
         } else {
@@ -146,53 +146,44 @@ open class MediaSlideshow: UIView {
     }
 
     /// Current scroll view page. This may differ from `currentPage` as circular slider has two more dummy pages at indexes 0 and n-1 to provide fluent scrolling between first and last item.
-    open fileprivate(set) var scrollViewPage: Int = 0
+    public fileprivate(set) var scrollViewPage: Int = 0
 
     /// Input Sources loaded to slideshow
-    open fileprivate(set) var sources = [MediaSource]()
+    public fileprivate(set) var sources = [MediaSource]()
 
     /// Image Slideshow Items loaded to slideshow
-    open fileprivate(set) var slides = [MediaSlideshowSlide]()
+    public fileprivate(set) var slides = [MediaSlideshowSlide]()
 
     // MARK: - Preferences
 
     /// Enables/disables user interactions
-    open var draggingEnabled = true {
+    public var draggingEnabled = true {
         didSet {
             scrollView.isUserInteractionEnabled = draggingEnabled
         }
     }
 
     /// Enables/disables zoom
-    open var zoomEnabled = false {
+    public var zoomEnabled = false {
         didSet {
             reloadScrollView()
         }
     }
 
     /// Maximum zoom scale
-    open var maximumScale: CGFloat = 2.0 {
+    public var maximumScale: CGFloat = 2.0 {
         didSet {
             reloadScrollView()
         }
     }
 
     /// Image preload configuration, can be sed to .fixed to enable lazy load or .all
-    open var preload = ImagePreload.all
-
-    /// Content mode of each image in the slideshow
-    open var contentScaleMode: UIViewContentMode = UIViewContentMode.scaleAspectFit {
-        didSet {
-            for view in slides {
-                view.mediaContentMode = contentScaleMode
-            }
-        }
-    }
+    public var preload = ImagePreload.all
 
     fileprivate var isAnimating: Bool = false
 
     /// Transitioning delegate to manage the transition to full screen controller
-    open internal(set) var slideshowTransitioningDelegate: ZoomAnimatedTransitioningDelegate? // swiftlint:disable:this weak_delegate
+    public internal(set) var slideshowTransitioningDelegate: ZoomAnimatedTransitioningDelegate? // swiftlint:disable:this weak_delegate
 
     private var primaryVisiblePage: Int {
         return scrollView.frame.size.width > 0 ? Int(scrollView.contentOffset.x + scrollView.frame.size.width / 2) / Int(scrollView.frame.size.width) : 0
@@ -245,7 +236,7 @@ open class MediaSlideshow: UIView {
         layoutScrollView()
     }
 
-    open override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         // fixes the case when automaticallyAdjustsScrollViewInsets on parenting view controller is set to true
@@ -255,7 +246,7 @@ open class MediaSlideshow: UIView {
         layoutScrollView()
     }
 
-    open func layoutPageControl() {
+    public func layoutPageControl() {
         if let pageIndicatorView = pageIndicator?.view {
             pageIndicatorView.isHidden = sources.count < 2
 
@@ -344,7 +335,7 @@ open class MediaSlideshow: UIView {
      - parameter newPage: new page
      - parameter animated: true if animate the change
      */
-    open func setCurrentPage(_ newPage: Int, animated: Bool) {
+    public func setCurrentPage(_ newPage: Int, animated: Bool) {
         setScrollViewPage(newPage, animated: animated)
     }
 
@@ -353,7 +344,7 @@ open class MediaSlideshow: UIView {
      - parameter newScrollViewPage: new scroll view page
      - parameter animated: true if animate the change
      */
-    open func setScrollViewPage(_ newScrollViewPage: Int, animated: Bool) {
+    public func setScrollViewPage(_ newScrollViewPage: Int, animated: Bool) {
         if scrollViewPage < sources.count {
             scrollView.scrollRectToVisible(CGRect(x: scrollView.frame.size.width * CGFloat(newScrollViewPage), y: 0, width: scrollView.frame.size.width, height: scrollView.frame.size.height), animated: animated)
             setCurrentPageForScrollViewPage(newScrollViewPage)
@@ -388,7 +379,7 @@ open class MediaSlideshow: UIView {
      Change the page to the next one
      - Parameter animated: true if animate the change
      */
-    open func nextPage(animated: Bool) {
+    public func nextPage(animated: Bool) {
         if isAnimating {
             return
         }
@@ -399,7 +390,7 @@ open class MediaSlideshow: UIView {
      Change the page to the previous one
      - Parameter animated: true if animate the change
      */
-    open func previousPage(animated: Bool) {
+    public func previousPage(animated: Bool) {
         if isAnimating {
             return
         }
@@ -416,18 +407,18 @@ open class MediaSlideshow: UIView {
 
 extension MediaSlideshow: UIScrollViewDelegate {
 
-    open func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         willBeginDragging?()
         delegate?.mediaSlideshowWillBeginDragging?(self)
     }
 
-    open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         setCurrentPageForScrollViewPage(primaryVisiblePage)
         didEndDecelerating?()
         delegate?.mediaSlideshowDidEndDecelerating?(self)
     }
 
-    open func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // Updates the page indicator as the user scrolls (#204). Not called when not dragging to prevent flickers
         // when interacting with PageControl directly (#376).
         if scrollView.isDragging {

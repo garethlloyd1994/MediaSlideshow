@@ -32,14 +32,14 @@ extension ImageSource {
             zoomEnabled: slideshow.zoomEnabled,
             activityIndicator: slideshow.activityIndicator?.create(),
             maximumScale: slideshow.maximumScale)
-        slide.imageView.contentMode = slideshow.contentScaleMode
+        slide.imageView.contentMode = .scaleAspectFill
         return slide
     }
 }
 
 /// Input Source to load plain UIImage
 @objcMembers
-open class UIImageSource: NSObject, ImageSource {
+public class UIImageSource: NSObject, ImageSource {
     var image: UIImage
 
     /// Initializes a new Image Source with UIImage
@@ -70,7 +70,7 @@ open class UIImageSource: NSObject, ImageSource {
 
 /// Input Source to load an image from the main bundle
 @objcMembers
-open class BundleImageSource: NSObject, ImageSource {
+public class BundleImageSource: NSObject, ImageSource {
     var imageString: String
 
     /// Initializes a new Image Source with an image name from the main bundle
@@ -91,7 +91,7 @@ open class BundleImageSource: NSObject, ImageSource {
 
 /// Input Source to load an image from a local file path
 @objcMembers
-open class FileImageSource: NSObject, ImageSource {
+public class FileImageSource: NSObject, ImageSource {
     var path: String
 
     /// Initializes a new Image Source with an image name from the main bundle

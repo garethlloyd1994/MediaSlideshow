@@ -10,16 +10,14 @@ let package = Package(
     products: [
         .library(
             name: "MediaSlideshow",
-            targets: ["MediaSlideshow"]),
-        .library(
-            name: "MediaSlideshowKingfisher",
-            targets: ["MediaSlideshowKingfisher"])
+            targets: ["MediaSlideshow"])
     ],
     dependencies: [
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.10.2"),
     ],
     targets: [
         .target(name: "MediaSlideshow",
+                dependencies: ["Kingfisher"],
                 path: "MediaSlideshow",
                 sources: ["Source"],
                 resources: [
@@ -27,10 +25,5 @@ let package = Package(
                     .copy("Resources/ic_cross_white@3x.png"),
                     .copy("Resources/AVAssets.xcassets")
                 ]),
-        .target(name: "MediaSlideshowKingfisher",
-                dependencies: ["MediaSlideshow", "Kingfisher"],
-                path: "MediaSlideshowKingfisher",
-                sources: ["Source"])
-    ],
-    swiftLanguageVersions: [.v4, .v4_2, .v5]
+    ]
 )

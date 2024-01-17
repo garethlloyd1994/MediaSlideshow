@@ -15,11 +15,11 @@ public enum FullscreenTransitionType: Int {
 }
 
 @objcMembers
-open class ZoomAnimatedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+public class ZoomAnimatedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     /// parent image view used for animated transition
-    open var referenceImageView: UIImageView?
+    public var referenceImageView: UIImageView?
     /// parent slideshow view used for animated transition
-    open weak var referenceSlideshowView: MediaSlideshow?
+    public weak var referenceSlideshowView: MediaSlideshow?
 
     // must be weak because FullScreenSlideshowViewController has strong reference to its transitioning delegate
     weak var referenceSlideshowController: FullScreenSlideshowViewController?
@@ -29,7 +29,7 @@ open class ZoomAnimatedTransitioningDelegate: NSObject, UIViewControllerTransiti
     fileprivate var interactionController: UIPercentDrivenInteractiveTransition?
 
     /// Enables or disables swipe-to-dismiss interactive transition
-    open var slideToDismissEnabled: Bool = true
+    public var slideToDismissEnabled: Bool = true
 
     /**
         Init the transitioning delegate with a source MediaSlideshow
@@ -102,7 +102,7 @@ open class ZoomAnimatedTransitioningDelegate: NSObject, UIViewControllerTransiti
         }
     }
 
-    open func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let reference = referenceSlideshowView {
             return ZoomInAnimator(referenceSlideshowView: reference, parent: self)
         } else if let reference = referenceImageView {
@@ -112,7 +112,7 @@ open class ZoomAnimatedTransitioningDelegate: NSObject, UIViewControllerTransiti
         }
     }
 
-    open func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let reference = referenceSlideshowView {
             return ZoomOutAnimator(referenceSlideshowView: reference, parent: self)
         } else if let reference = referenceImageView {
@@ -122,11 +122,11 @@ open class ZoomAnimatedTransitioningDelegate: NSObject, UIViewControllerTransiti
         }
     }
 
-    open func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return interactionController
     }
 
-    open func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return interactionController
     }
 

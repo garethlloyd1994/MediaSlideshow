@@ -41,12 +41,12 @@ extension UIActivityIndicatorView: ActivityIndicatorView {
 
 /// Default activity indicator factory creating UIActivityIndicatorView instances
 @objcMembers
-open class DefaultActivityIndicator: ActivityIndicatorFactory {
+public class DefaultActivityIndicator: ActivityIndicatorFactory {
     /// activity indicator style
-    open var style: UIActivityIndicatorViewStyle
+    public var style: UIActivityIndicatorViewStyle
 
     /// activity indicator color
-    open var color: UIColor?
+    public var color: UIColor?
 
     /// Create a new ActivityIndicator for UIActivityIndicatorView
     ///
@@ -58,7 +58,7 @@ open class DefaultActivityIndicator: ActivityIndicatorFactory {
     }
 
     /// create ActivityIndicatorView instance
-    open func create() -> ActivityIndicatorView {
+    public func create() -> ActivityIndicatorView {
         #if swift(>=4.2)
         let activityIndicator = UIActivityIndicatorView(style: style)
         #else
