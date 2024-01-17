@@ -65,7 +65,7 @@ open class AVSource: NSObject, MediaSource {
 }
 
 extension AVSource: AVPlayerSlideDelegate {
-    open func slideDidAppear(_ slide: AVPlayerSlide) {
+    public func slideDidAppear(_ slide: AVPlayerSlide) {
         switch onAppear {
         case .play:
             player.play()
@@ -75,11 +75,11 @@ extension AVSource: AVPlayerSlideDelegate {
         }
     }
 
-    open func slideDidDisappear(_ slide: AVPlayerSlide) {
+    public func slideDidDisappear(_ slide: AVPlayerSlide) {
         player.pause()
     }
 
-    open func currentThumbnail(_ slide: AVPlayerSlide) -> UIImage? {
+    public func currentThumbnail(_ slide: AVPlayerSlide) -> UIImage? {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         if let imageRef = try? generator.copyCGImage(at: player.currentTime(), actualTime: nil) {
