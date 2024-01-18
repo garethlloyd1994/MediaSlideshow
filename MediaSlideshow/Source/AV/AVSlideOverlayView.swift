@@ -16,13 +16,13 @@ public protocol AVSlideOverlayView: UIView {
 }
 
 public class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
-
+    
     private let playView: AVSlideOverlayView?
     private let pauseView: AVSlideOverlayView?
     private let activityView: ActivityIndicatorView?
     private var playerTimeControlStatusObservation: NSKeyValueObservation?
     private var playerTimeObserver: Any?
-
+    
     public init(item: AVPlayerItem,
                 player: AVPlayer,
                 playView: AVSlideOverlayView? = AVSlidePlayingOverlayView(),
@@ -43,30 +43,27 @@ public class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
         }
         playerDidUpdateStatus(.paused)
         let interval = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-        playerTimeObserver = player.addPeriodicTimeObserver(
-            forInterval: interval,
-            queue: .main) { [weak item, weak self] time in
-                guard let self = self, let item = item else { return }
-                let currentTime = item.currentTime().seconds
-                let duration = item.duration.seconds
-                self.playerDidUpdateToTime(
-                    currentTime,
-                    duration: (duration.isNaN || duration.isInfinite) ? nil : duration)
-            }
+        playerTimeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak item, weak self] time in
+            guard let self = self, let item = item else { return }
+            let currentTime = item.currentTime().seconds
+            let duration = item.duration.seconds
+            self.playerDidUpdateToTime(currentTime,
+                                       duration: (duration.isNaN || duration.isInfinite) ? nil : duration)
+        }
         playerTimeControlStatusObservation = player.observe(\.timeControlStatus) { [weak self] player, _ in
             self?.playerDidUpdateStatus(player.timeControlStatus)
         }
     }
-
+    
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     public func playerDidUpdateToTime(_ currentTime: TimeInterval, duration: TimeInterval?) {
         playView?.playerDidUpdateToTime(currentTime, duration: duration)
         pauseView?.playerDidUpdateToTime(currentTime, duration: duration)
     }
-
+    
     public func playerDidUpdateStatus(_ status: AVPlayer.TimeControlStatus) {
         playView?.playerDidUpdateStatus(status)
         pauseView?.playerDidUpdateStatus(status)
@@ -83,7 +80,7 @@ public class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
 }
 
 public class AVSlidePlayingOverlayView: UIView, AVSlideOverlayView {
-
+    
     private let countdownLabel: UILabel = {
         var label = UILabel()
         label.textColor = .white
@@ -92,39 +89,38 @@ public class AVSlidePlayingOverlayView: UIView, AVSlideOverlayView {
         label.layer.masksToBounds = true
         label.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         label.textAlignment = .center
-        let height = NSLayoutConstraint(
-            item: label,
-            attribute: .height,
-            relatedBy: .equal,
-            toItem: nil,
-            attribute: .notAnAttribute,
-            multiplier: 1,
-            constant: 20)
+        let height = NSLayoutConstraint( item: label,
+                                         attribute: .height,
+                                         relatedBy: .equal,
+                                         toItem: nil,
+                                         attribute: .notAnAttribute,
+                                         multiplier: 1,
+                                         constant: 20)
         height.isActive = true
         return label
     }()
-
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         countdownLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(countdownLabel)
         NSLayoutConstraint.activate([
-            countdownLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+            countdownLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20),
             countdownLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
         ])
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     public override func layoutSubviews() {
         super.layoutSubviews()
         var labelFrame = countdownLabel.frame
         labelFrame.size.width = countdownLabel.intrinsicContentSize.width * 1.2
         countdownLabel.frame = labelFrame
     }
-
+    
     public func playerDidUpdateToTime(_ currentTime: TimeInterval, duration: TimeInterval?) {
         guard let duration = duration else {
             countdownLabel.text = nil
@@ -136,7 +132,7 @@ public class AVSlidePlayingOverlayView: UIView, AVSlideOverlayView {
         let under10 = secondsRemaining % 60 < 10
         countdownLabel.text = minutes + (under10 ? ":0" : ":") + seconds
     }
-
+    
     public func playerDidUpdateStatus(_ status: AVPlayer.TimeControlStatus) {
         switch status {
         case .paused: isHidden = true
@@ -146,22 +142,22 @@ public class AVSlidePlayingOverlayView: UIView, AVSlideOverlayView {
 }
 
 public class AVSlidePausedOverlayView: UIView, AVSlideOverlayView {
-
+    
     private let playImageView = UIImageView()
-
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         playImageView.image = UIImage(named: "video-play", in: Bundle(for: Self.self), compatibleWith: nil)
         playImageView.contentMode = .center
         embed(playImageView)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     public func playerDidUpdateToTime(_ currentTime: TimeInterval, duration: TimeInterval?) {}
-
+    
     public func playerDidUpdateStatus(_ status: AVPlayer.TimeControlStatus) {
         switch status {
         case .paused: isHidden = false

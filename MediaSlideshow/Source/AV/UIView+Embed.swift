@@ -10,16 +10,13 @@ import Foundation
 import UIKit
 
 extension UIView {
-    func embed(_ view: UIView, safeArea: Bool = true) {
+    func embed(_ view: UIView, edgeInsets: UIEdgeInsets? = nil) {
         view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(view)
-        let topInset = safeArea ? safeAreaInsets.top : 0
-        let bottomInset = safeArea ? safeAreaInsets.bottom : 0
-        let leadingInset = safeArea ? safeAreaInsets.left : 0
-        let trailingInset = safeArea ? safeAreaInsets.right : 0
-        view.topAnchor.constraint(equalTo: topAnchor, constant: topInset).isActive = true
-        view.bottomAnchor.constraint(equalTo: bottomAnchor, constant: bottomInset).isActive = true
-        view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingInset).isActive = true
-        view.trailingAnchor.constraint(equalTo: trailingAnchor, constant: trailingInset).isActive = true
+        let viewInsets = edgeInsets ?? safeAreaInsets
+        view.topAnchor.constraint(equalTo: topAnchor, constant: viewInsets.top).isActive = true
+        view.bottomAnchor.constraint(equalTo: bottomAnchor, constant: viewInsets.bottom).isActive = true
+        view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: viewInsets.left).isActive = true
+        view.trailingAnchor.constraint(equalTo: trailingAnchor, constant: viewInsets.right).isActive = true
     }
 }

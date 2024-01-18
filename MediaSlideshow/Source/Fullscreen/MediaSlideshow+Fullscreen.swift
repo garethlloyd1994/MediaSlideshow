@@ -26,7 +26,7 @@ extension MediaSlideshow {
         fullscreen.setMediaSources(sources)
         slideshowTransitioningDelegate = ZoomAnimatedTransitioningDelegate(slideshowView: self, slideshowController: fullscreen)
         fullscreen.transitioningDelegate = slideshowTransitioningDelegate
-        fullscreen.modalPresentationStyle = .custom
+        fullscreen.modalPresentationStyle = .overFullScreen
         controller.present(fullscreen, animated: true, completion: completion)
         return fullscreen
     }

@@ -77,6 +77,12 @@ public class MediaSlideshow: UIView {
             setNeedsLayout()
         }
     }
+    
+    public var pageIndicatorPosition: PageIndicatorPosition = PageIndicatorPosition() {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
     // MARK: - State properties
 
@@ -204,12 +210,29 @@ public class MediaSlideshow: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         scrollView.contentInset = UIEdgeInsets.zero
+        layoutPageControl()
         layoutScrollView()
+    }
+
+    public func layoutPageControl() {
+        if let pageIndicatorView = pageIndicator?.view {
+            pageIndicatorView.isHidden = sources.count < 2
+
+            var edgeInsets: UIEdgeInsets = UIEdgeInsets.zero
+            if #available(iOS 11.0, *) {
+                edgeInsets = safeAreaInsets
+            }
+
+            pageIndicatorView.sizeToFit()
+            pageIndicatorView.frame = pageIndicatorPosition.indicatorFrame(for: frame, indicatorSize: pageIndicatorView.frame.size, edgeInsets: edgeInsets)
+        }
     }
 
     /// updates frame of the scroll view and its inner items
     func layoutScrollView() {
-        scrollView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
+        let pageIndicatorViewSize = pageIndicator?.view.frame.size
+        let scrollViewBottomPadding = pageIndicatorViewSize.flatMap { pageIndicatorPosition.underPadding(for: $0) } ?? 0
+        scrollView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height - scrollViewBottomPadding)
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width * CGFloat(sources.count), height: scrollView.frame.size.height)
         for (index, view) in slides.enumerated() {
             if let zoomable = view as? ZoomableMediaSlideshowSlide, !zoomable.zoomInInitially {

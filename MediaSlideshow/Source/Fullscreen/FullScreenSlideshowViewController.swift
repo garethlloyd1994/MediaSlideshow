@@ -14,6 +14,7 @@ public class FullScreenSlideshowViewController: UIViewController {
         let slideshow = MediaSlideshow()
         slideshow.zoomEnabled = true
         slideshow.contentMode = .scaleAspectFit
+        slideshow.pageIndicatorPosition = PageIndicatorPosition(horizontal: .center, vertical: .bottom)
         slideshow.autoresizingMask = [UIView.AutoresizingMask.flexibleWidth, UIView.AutoresizingMask.flexibleHeight]
         return slideshow
     }()
@@ -57,7 +58,7 @@ public class FullScreenSlideshowViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = backgroundColor
         slideshow.backgroundColor = backgroundColor
-        view.addSubview(slideshow)
+        view.embed(slideshow)
         closeButton.setImage(UIImage(named: "ic_cross_white", in: .module, compatibleWith: nil), for: .normal)
         closeButton.addTarget(self, action: #selector(FullScreenSlideshowViewController.close), for: .touchUpInside)
         view.addSubview(closeButton)
@@ -88,7 +89,6 @@ public class FullScreenSlideshowViewController: UIViewController {
         if !isBeingDismissed {
             let safeAreaInsets: UIEdgeInsets
             safeAreaInsets = view.safeAreaInsets
-            
             closeButton.frame = closeButtonFrame ?? CGRect(x: max(10, safeAreaInsets.left), y: max(10, safeAreaInsets.top), width: 40, height: 40)
         }
         slideshow.frame = view.frame

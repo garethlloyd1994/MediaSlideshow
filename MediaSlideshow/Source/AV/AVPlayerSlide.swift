@@ -29,10 +29,7 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
         setPlayerViewVideoGravity()
         transitionView.isHidden = true
         embed(transitionView)
-        embed(playerController.view)
-        if playerController.showsPlaybackControls {
-            addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didSingleTap)))
-        }
+        embed(playerController.view, edgeInsets: UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0))
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -79,5 +76,7 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
     }
 
     @objc
-    private func didSingleTap() {}
+    private func didSingleTap() {
+        print("hello")
+    }
 }

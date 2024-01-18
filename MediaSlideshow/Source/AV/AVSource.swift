@@ -23,33 +23,32 @@ public class AVSource: NSObject, MediaSource {
         self.asset = asset
         self.onAppear = onAppear
         super.init()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(playerItemDidPlayToEndTime(notification:)),
-            name: .AVPlayerItemDidPlayToEndTime,
-            object: item)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(playerItemDidPlayToEndTime(notification:)),
+                                               name: .AVPlayerItemDidPlayToEndTime,
+                                               object: item)
     }
 
     public convenience init(url: URL, onAppear: Playback) {
         self.init(asset: AVAsset(url: url), onAppear: onAppear)
     }
-
+    
     public func slide(in slideshow: MediaSlideshow) -> MediaSlideshowSlide {
         let playerController = AVPlayerViewController()
         playerController.player = player
         playerController.showsPlaybackControls = onAppear == .paused || slideshow.zoomEnabled
+        playerController.entersFullScreenWhenPlaybackBegins = true
         var playView: AVSlidePlayingOverlayView?
         var pauseView: AVSlidePausedOverlayView?
         if !playerController.showsPlaybackControls {
             playView = AVSlidePlayingOverlayView()
             pauseView = AVSlidePausedOverlayView()
         }
-        let overlay = StandardAVSlideOverlayView(
-            item: item,
-            player: player,
-            playView: playView,
-            pauseView: pauseView,
-            activityView: slideshow.activityIndicator?.create())
+        let overlay = StandardAVSlideOverlayView(item: item,
+                                                 player: player,
+                                                 playView: playView,
+                                                 pauseView: pauseView,
+                                                 activityView: slideshow.activityIndicator?.create())
         playerController.contentOverlayView?.embed(overlay)
         let slide = AVPlayerSlide(playerController: playerController, mediaContentMode: slideshow.contentScaleMode)
         slide.delegate = self

@@ -65,21 +65,13 @@ public class ImageSlide: UIScrollView, UIScrollViewDelegate, ZoomableMediaSlides
         self.maximumScale = maximumScale
 
         super.init(frame: CGRect.null)
-
         imageViewWrapper.addSubview(imageView)
         imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         imageView.isAccessibilityElement = true
         imageView.accessibilityTraits = .image
-        if #available(iOS 11.0, *) {
-            imageView.accessibilityIgnoresInvertColors = true
-        }
-
+        imageView.accessibilityIgnoresInvertColors = true
         imageViewWrapper.clipsToBounds = true
         imageViewWrapper.isUserInteractionEnabled = true
-        if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft {
-            imageView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-        }
-
         setPictoCenter()
 
         // scroll view configuration
