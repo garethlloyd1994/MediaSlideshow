@@ -37,7 +37,7 @@ public class AVSource: NSObject, MediaSource {
         let playerController = AVPlayerViewController()
         playerController.player = player
         playerController.showsPlaybackControls = onAppear == .paused || slideshow.zoomEnabled
-        playerController.entersFullScreenWhenPlaybackBegins = true
+        playerController.entersFullScreenWhenPlaybackBegins = slideshow.zoomEnabled
         var playView: AVSlidePlayingOverlayView?
         var pauseView: AVSlidePausedOverlayView?
         if !playerController.showsPlaybackControls {

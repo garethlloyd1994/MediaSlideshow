@@ -14,10 +14,11 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.10.2"),
+        .package(url: "https://github.com/hainayanda/Odeum.git", .upToNextMajor(from: "1.2.8"))
     ],
     targets: [
         .target(name: "MediaSlideshow",
-                dependencies: ["Kingfisher"],
+                dependencies: ["Kingfisher", "Odeum"],
                 path: "MediaSlideshow",
                 sources: ["Source"],
                 resources: [

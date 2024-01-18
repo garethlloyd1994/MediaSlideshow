@@ -26,6 +26,7 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
         self.transitionView = UIImageView()
         self.mediaContentMode = mediaContentMode
         super.init(frame: .zero)
+        playerController.delegate = self
         setPlayerViewVideoGravity()
         transitionView.isHidden = true
         embed(transitionView)
@@ -77,6 +78,17 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
 
     @objc
     private func didSingleTap() {
+        print("hello")
+    }
+}
+
+extension AVPlayerSlide: AVPlayerViewControllerDelegate {
+    public func playerViewController(_ playerViewController: AVPlayerViewController,
+                                     willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        print("hello")
+    }
+    
+    public func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         print("hello")
     }
 }
