@@ -369,6 +369,10 @@ public class MediaSlideshow: UIView {
             setCurrentPage(currentPage, animated: true)
         }
     }
+    
+    public func viewWillDisappear() {
+        slides.forEach { $0.willBeRemoved() }
+    }
 }
 
 extension MediaSlideshow: UIScrollViewDelegate {

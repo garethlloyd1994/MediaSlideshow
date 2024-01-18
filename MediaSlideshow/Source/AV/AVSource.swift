@@ -18,7 +18,7 @@ public class AVSource: NSObject, MediaSource {
     private let asset: AVAsset
     private lazy var item = AVPlayerItem(asset: asset)
     private lazy var player = AVPlayer(playerItem: item)
-    private var slideshow: MediaSlideshow?
+    private var customOverlay: AVCustomOverlay?
 
     public init(asset: AVAsset, onAppear: Playback) {
         self.asset = asset
@@ -28,6 +28,14 @@ public class AVSource: NSObject, MediaSource {
                                                selector: #selector(playerItemDidPlayToEndTime(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: item)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
+        
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     public convenience init(url: URL, onAppear: Playback) {
@@ -37,8 +45,18 @@ public class AVSource: NSObject, MediaSource {
     public func slide(in slideshow: MediaSlideshow) -> MediaSlideshowSlide {
         let playerController = AVPlayerViewController()
         playerController.player = player
-        playerController.showsPlaybackControls = onAppear == .paused || slideshow.zoomEnabled
-        playerController.entersFullScreenWhenPlaybackBegins = slideshow.zoomEnabled
+        playerController.showsPlaybackControls = false
+        if slideshow.zoomEnabled {
+            addFullScreenOverlay(to: playerController)
+        } else {
+            addSmallOverlay(to: playerController, slideshow: slideshow)
+        }
+        let slide = AVPlayerSlide(playerController: playerController, mediaContentMode: slideshow.contentScaleMode)
+        slide.delegate = self
+        return slide
+    }
+    
+    func addSmallOverlay(to playerController: AVPlayerViewController, slideshow: MediaSlideshow) {
         var playView: AVSlidePlayingOverlayView?
         var pauseView: AVSlidePausedOverlayView?
         if !playerController.showsPlaybackControls {
@@ -51,23 +69,34 @@ public class AVSource: NSObject, MediaSource {
                                                  pauseView: pauseView,
                                                  activityView: slideshow.activityIndicator?.create())
         playerController.contentOverlayView?.embed(overlay)
-        let slide = AVPlayerSlide(playerController: playerController, mediaContentMode: slideshow.contentScaleMode)
-        slide.delegate = self
-        self.slideshow = slideshow
-        return slide
+    }
+    
+    func addFullScreenOverlay(to playerController: AVPlayerViewController) {
+        let customOverlay = AVCustomOverlay(item: item, player: player)
+        customOverlay.delegate = self
+        self.customOverlay = customOverlay
+        playerController.contentOverlayView?.embed(customOverlay)
     }
 
     @objc public func playerItemDidPlayToEndTime(notification: Notification) {
         player.seek(to: .zero)
+        player.play()
+        self.customOverlay?.playPauseStatus = .play
+    }
+    
+    @objc func didBecomeActive() {
+        player.play()
     }
 }
 
 extension AVSource: AVPlayerSlideDelegate {
+ 
     public func slideDidAppear(_ slide: AVPlayerSlide) {
         switch onAppear {
         case .play:
             player.play()
-            player.isMuted = !slide.playerController.showsPlaybackControls
+            player.isMuted = true
+            self.customOverlay?.updateButtonsStatus()
         case .paused:
             player.pause()
         }
@@ -86,7 +115,47 @@ extension AVSource: AVPlayerSlideDelegate {
         return nil
     }
     
-    public func close(_slide: AVPlayerSlide) {
-        slideshow?.delegate?.shouldClose?()
+    func seek(to time: TimeInterval) {
+        let cmTime = CMTime(seconds: time, preferredTimescale: 1000)
+        player.seek(to: cmTime)
+    }
+}
+
+extension AVSource: AVCustomOverlayDelegate {
+    
+    func updateMuteStatus(to newStatus: MuteStatus) {
+        switch newStatus {
+        case .muted: player.isMuted = true
+        case .unmuted: player.isMuted = false
+        }
+    }
+    
+    func updatePlayPauseStatus(to newStatus: PlayPauseStatus) {
+        switch newStatus {
+        case .play: player.play()
+        case .pause: player.pause()
+        }
+    }
+    
+    func didForwardSkip() {
+        let currentTime = player.currentTime().seconds
+        let newTime = currentTime + 5
+        seek(to: newTime)
+    }
+    
+    func didBackwardsSkip() {
+        let currentTime = player.currentTime().seconds
+        let newTime = currentTime - 5
+        seek(to: newTime)
+    }
+    
+    func seek(to value: TimeInterval, shouldPause: Bool, shouldPlay: Bool) {
+        if shouldPause {
+            player.pause()
+        }
+        seek(to: value)
+        if shouldPlay {
+            player.play()
+        }
     }
 }

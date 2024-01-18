@@ -13,13 +13,11 @@ public protocol AVPlayerSlideDelegate: AnyObject {
     func currentThumbnail(_ slide: AVPlayerSlide) -> UIImage?
     func slideDidAppear(_ slide: AVPlayerSlide)
     func slideDidDisappear(_ slide: AVPlayerSlide)
-    func close(_slide: AVPlayerSlide)
 }
 
 public class AVPlayerSlide: UIView, MediaSlideshowSlide {
     weak var delegate: AVPlayerSlideDelegate?
-
-    public let playerController: AVPlayerViewController
+    weak var playerController: AVPlayerViewController?
     private let transitionView: UIImageView
     
     public init(playerController: AVPlayerViewController, mediaContentMode: UIView.ContentMode) {
@@ -27,7 +25,6 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
         self.transitionView = UIImageView()
         self.mediaContentMode = mediaContentMode
         super.init(frame: .zero)
-        playerController.delegate = self
         setPlayerViewVideoGravity()
         transitionView.isHidden = true
         embed(transitionView)
@@ -40,9 +37,9 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
     
     private func setPlayerViewVideoGravity() {
           switch mediaContentMode {
-          case .scaleAspectFill: playerController.videoGravity = .resizeAspectFill
-          case .scaleToFill: playerController.videoGravity = .resize
-          default: playerController.videoGravity = .resizeAspect
+          case .scaleAspectFill: playerController?.videoGravity = .resizeAspectFill
+          case .scaleToFill: playerController?.videoGravity = .resize
+          default: playerController?.videoGravity = .resizeAspect
           }
       }
 
@@ -55,14 +52,17 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
       }
 
     public func willBeRemoved() {
-        playerController.player?.pause()
+        playerController?.player?.pause()
+        playerController?.player?.replaceCurrentItem(with: nil)
+        playerController?.view.removeFromSuperview()
+        playerController = nil
     }
 
     public func loadMedia() {}
     public func releaseMedia() {}
 
     public func transitionImageView() -> UIImageView {
-        transitionView.frame = playerController.videoBounds
+        transitionView.frame = playerController?.videoBounds ?? .zero
         transitionView.contentMode = .scaleAspectFill
         transitionView.image = delegate?.currentThumbnail(self)
         return transitionView
@@ -74,17 +74,5 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
 
     public func didDisappear() {
         delegate?.slideDidDisappear(self)
-    }
-}
-
-extension AVPlayerSlide: AVPlayerViewControllerDelegate {
-    public func playerViewController(_ playerViewController: AVPlayerViewController,
-                                     willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        delegate?.close(_slide: self)
-    }
-    
-    public func playerViewController(_ playerViewController: AVPlayerViewController,
-                                     willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        delegate?.close(_slide: self)
     }
 }

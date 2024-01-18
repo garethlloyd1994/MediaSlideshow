@@ -6,17 +6,8 @@
         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
         "state": {
           "branch": null,
-          "revision": "3ec0ab0bca4feb56e8b33e289c9496e89059dd08",
-          "version": "7.10.2"
-        }
-      },
-      {
-        "package": "Odeum",
-        "repositoryURL": "https://github.com/hainayanda/Odeum.git",
-        "state": {
-          "branch": null,
-          "revision": "3d561a25fdf52998a8d35d33919b0f623d22bf56",
-          "version": "1.2.8"
+          "revision": "5b92f029fab2cce44386d28588098b5be0824ef5",
+          "version": "7.11.0"
         }
       }
     ]
