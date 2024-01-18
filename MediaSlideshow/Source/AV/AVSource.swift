@@ -18,6 +18,7 @@ public class AVSource: NSObject, MediaSource {
     private let asset: AVAsset
     private lazy var item = AVPlayerItem(asset: asset)
     private lazy var player = AVPlayer(playerItem: item)
+    private var slideshow: MediaSlideshow?
 
     public init(asset: AVAsset, onAppear: Playback) {
         self.asset = asset
@@ -52,6 +53,7 @@ public class AVSource: NSObject, MediaSource {
         playerController.contentOverlayView?.embed(overlay)
         let slide = AVPlayerSlide(playerController: playerController, mediaContentMode: slideshow.contentScaleMode)
         slide.delegate = self
+        self.slideshow = slideshow
         return slide
     }
 
@@ -82,5 +84,9 @@ extension AVSource: AVPlayerSlideDelegate {
             return UIImage(cgImage: imageRef)
         }
         return nil
+    }
+    
+    public func close(_slide: AVPlayerSlide) {
+        slideshow?.delegate?.shouldClose?()
     }
 }

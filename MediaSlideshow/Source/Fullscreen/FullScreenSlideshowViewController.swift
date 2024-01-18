@@ -115,4 +115,8 @@ extension FullScreenSlideshowViewController: MediaSlideshowDelegate {
             self.closeButton.alpha = isAVSource ? 0.0 : 1.0
         }
     }
+    
+    public func shouldClose() {
+        close()
+    }
 }

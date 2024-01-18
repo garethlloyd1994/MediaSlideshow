@@ -13,6 +13,7 @@ public protocol AVPlayerSlideDelegate: AnyObject {
     func currentThumbnail(_ slide: AVPlayerSlide) -> UIImage?
     func slideDidAppear(_ slide: AVPlayerSlide)
     func slideDidDisappear(_ slide: AVPlayerSlide)
+    func close(_slide: AVPlayerSlide)
 }
 
 public class AVPlayerSlide: UIView, MediaSlideshowSlide {
@@ -58,7 +59,6 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
     }
 
     public func loadMedia() {}
-
     public func releaseMedia() {}
 
     public func transitionImageView() -> UIImageView {
@@ -75,20 +75,16 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
     public func didDisappear() {
         delegate?.slideDidDisappear(self)
     }
-
-    @objc
-    private func didSingleTap() {
-        print("hello")
-    }
 }
 
 extension AVPlayerSlide: AVPlayerViewControllerDelegate {
     public func playerViewController(_ playerViewController: AVPlayerViewController,
                                      willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        print("hello")
+        delegate?.close(_slide: self)
     }
     
-    public func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        print("hello")
+    public func playerViewController(_ playerViewController: AVPlayerViewController,
+                                     willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        delegate?.close(_slide: self)
     }
 }

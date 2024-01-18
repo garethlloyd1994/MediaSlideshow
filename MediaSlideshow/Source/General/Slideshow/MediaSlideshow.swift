@@ -26,6 +26,8 @@ public protocol MediaSlideshowDelegate: AnyObject {
     ///
     /// - Parameter mediaSlideshow: slideshow instance
     @objc optional func mediaSlideshowDidEndDecelerating(_ mediaSlideshow: MediaSlideshow)
+    
+    @objc optional func shouldClose()
 }
 
 /** 
@@ -57,7 +59,7 @@ public class MediaSlideshow: UIView {
 
     /// Scroll View to wrap the slideshow
     public let scrollView = UIScrollView()
-   
+       
     /// Activity indicator shown when loading image
     public var activityIndicator: ActivityIndicatorFactory? {
         didSet {
