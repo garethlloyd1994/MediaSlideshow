@@ -81,33 +81,31 @@ public class StandardAVSlideOverlayView: UIView, AVSlideOverlayView {
 
 public class AVSlidePlayingOverlayView: UIView, AVSlideOverlayView {
     
-    private let countdownLabel: UILabel = {
-        var label = UILabel()
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
-        label.layer.cornerRadius = 4
-        label.layer.masksToBounds = true
-        label.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-        label.textAlignment = .center
-        let height = NSLayoutConstraint( item: label,
-                                         attribute: .height,
-                                         relatedBy: .equal,
-                                         toItem: nil,
-                                         attribute: .notAnAttribute,
-                                         multiplier: 1,
-                                         constant: 20)
-        height.isActive = true
-        return label
-    }()
+    private weak var countdownLabel: UILabel?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
+        var countdownLabel = UILabel()
+        countdownLabel.textColor = .white
+        countdownLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        countdownLabel.layer.cornerRadius = 4
+        countdownLabel.layer.masksToBounds = true
+        countdownLabel.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        countdownLabel.textAlignment = .center
+        NSLayoutConstraint(item: countdownLabel,
+                            attribute: .height,
+                            relatedBy: .equal,
+                            toItem: nil,
+                            attribute: .notAnAttribute,
+                            multiplier: 1,
+                            constant: 20).isActive = true
         countdownLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(countdownLabel)
         NSLayoutConstraint.activate([
             countdownLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20),
             countdownLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
         ])
+        self.countdownLabel = countdownLabel
     }
     
     required init?(coder: NSCoder) {
@@ -116,14 +114,15 @@ public class AVSlidePlayingOverlayView: UIView, AVSlideOverlayView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
+        guard let countdownLabel = countdownLabel else { return }
         var labelFrame = countdownLabel.frame
         labelFrame.size.width = countdownLabel.intrinsicContentSize.width * 1.2
         countdownLabel.frame = labelFrame
     }
     
     public func playerDidUpdateToTime(_ currentTime: TimeInterval, duration: TimeInterval?) {
-        guard let duration = duration else {
-            countdownLabel.text = nil
+        guard let duration = duration, let countdownLabel = countdownLabel else {
+            countdownLabel?.text = nil
             return
         }
         let secondsRemaining = Int(duration - currentTime)
@@ -142,11 +141,10 @@ public class AVSlidePlayingOverlayView: UIView, AVSlideOverlayView {
 }
 
 public class AVSlidePausedOverlayView: UIView, AVSlideOverlayView {
-    
-    private let playImageView = UIImageView()
-    
+        
     public override init(frame: CGRect) {
         super.init(frame: frame)
+        let playImageView = UIImageView()
         playImageView.image = UIImage(named: "video-play", in: Bundle(for: Self.self), compatibleWith: nil)
         playImageView.contentMode = .center
         embed(playImageView)
