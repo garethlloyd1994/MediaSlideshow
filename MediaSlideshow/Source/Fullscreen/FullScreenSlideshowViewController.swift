@@ -78,7 +78,7 @@ public class FullScreenSlideshowViewController: UIViewController {
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        slideshow.slides.forEach { $0.willBeRemoved() }
+        slideshow.slides.forEach { $0.willBeRemoved(shouldRemovePlayer: false) }
         if let zoomable = slideshow.currentSlide as? ZoomableMediaSlideshowSlide {
             zoomable.zoomOut()
         }

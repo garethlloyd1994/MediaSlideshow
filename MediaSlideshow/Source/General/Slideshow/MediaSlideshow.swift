@@ -371,7 +371,7 @@ public class MediaSlideshow: UIView {
     }
     
     public func viewWillDisappear() {
-        slides.forEach { $0.willBeRemoved() }
+        slides.forEach { $0.willBeRemoved(shouldRemovePlayer: true) }
     }
 }
 

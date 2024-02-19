@@ -17,7 +17,7 @@ public protocol AVPlayerSlideDelegate: AnyObject {
 
 public class AVPlayerSlide: UIView, MediaSlideshowSlide {
     weak var delegate: AVPlayerSlideDelegate?
-    weak var playerController: AVPlayerViewController?
+    var playerController: AVPlayerViewController?
     private let transitionView: UIImageView
     
     public init(playerController: AVPlayerViewController, mediaContentMode: UIView.ContentMode) {
@@ -51,11 +51,13 @@ public class AVPlayerSlide: UIView, MediaSlideshowSlide {
           }
       }
 
-    public func willBeRemoved() {
+    public func willBeRemoved(shouldRemovePlayer: Bool = false) {
         playerController?.player?.pause()
-        playerController?.player?.replaceCurrentItem(with: nil)
-        playerController?.view.removeFromSuperview()
-        playerController = nil
+        if shouldRemovePlayer {
+            playerController?.player?.replaceCurrentItem(with: nil)
+            playerController?.view.removeFromSuperview()
+            playerController = nil
+        }
     }
 
     public func loadMedia() {}

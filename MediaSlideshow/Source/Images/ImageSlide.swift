@@ -168,7 +168,7 @@ public class ImageSlide: UIScrollView, UIScrollViewDelegate, ZoomableMediaSlides
         self.imageView.image = nil
     }
 
-    public func willBeRemoved() {
+    public func willBeRemoved(shouldRemovePlayer _: Bool) {
         cancelPendingLoad()
     }
 

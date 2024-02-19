@@ -10,7 +10,7 @@ import UIKit
 public protocol MediaSlideshowSlide: UIView {
     var mediaContentMode: UIView.ContentMode { get set }
     func transitionImageView() -> UIImageView
-    func willBeRemoved()
+    func willBeRemoved(shouldRemovePlayer: Bool)
     func loadMedia()
     func releaseMedia()
     func didAppear()
