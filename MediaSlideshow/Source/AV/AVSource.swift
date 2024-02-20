@@ -9,20 +9,30 @@ import AVFoundation
 import AVKit
 import Foundation
 
+public protocol AVSourceDelegate: AnyObject {
+    func didStartPlaying(url: String)
+    func didCompletePlaying(url: String)
+}
+
 public class AVSource: NSObject, MediaSource {
     public enum Playback: Equatable {
         case play // will be muted when playback controls are hidden
         case paused
     }
     private let onAppear: Playback
+    private var initialURL: URL?
     private let asset: AVAsset
     private lazy var item = AVPlayerItem(asset: asset)
     private lazy var player = AVPlayer(playerItem: item)
     private var customOverlay: AVCustomOverlay?
+    weak var delegate: AVSourceDelegate?
+    var isCurrentlyPlaying = false
+    var isCompleted = false
 
-    public init(asset: AVAsset, onAppear: Playback) {
+    public init(asset: AVAsset, onAppear: Playback, delegate: AVSourceDelegate?) {
         self.asset = asset
         self.onAppear = onAppear
+        self.delegate = delegate
         super.init()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidPlayToEndTime(notification:)),
@@ -38,8 +48,9 @@ public class AVSource: NSObject, MediaSource {
         NotificationCenter.default.removeObserver(self)
     }
 
-    public convenience init(url: URL, onAppear: Playback) {
-        self.init(asset: AVAsset(url: url), onAppear: onAppear)
+    public convenience init(url: URL, onAppear: Playback, delegate: AVSourceDelegate?) {
+        self.init(asset: AVAsset(url: url), onAppear: onAppear, delegate: delegate)
+        self.initialURL = url
     }
     
     public func slide(in slideshow: MediaSlideshow) -> MediaSlideshowSlide {
@@ -82,6 +93,10 @@ public class AVSource: NSObject, MediaSource {
         player.seek(to: .zero)
         player.play()
         self.customOverlay?.playPauseStatus = .play
+        if !isCompleted {
+            delegate?.didCompletePlaying(url: initialURL?.absoluteString ?? "")
+            isCompleted = true
+        }
     }
     
     @objc func didBecomeActive() {
@@ -97,6 +112,10 @@ extension AVSource: AVPlayerSlideDelegate {
             player.play()
             player.isMuted = true
             self.customOverlay?.updateButtonsStatus()
+            if !isCurrentlyPlaying {
+                delegate?.didStartPlaying(url: initialURL?.absoluteString ?? "")
+                isCurrentlyPlaying = true
+            }
         case .paused:
             player.pause()
         }
